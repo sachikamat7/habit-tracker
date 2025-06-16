@@ -174,7 +174,14 @@ export default function LoginForm() {
                   </FormItem>
                 )}
               />
-
+              <div className="text-right">
+                <Link
+                  href="/reset-password"
+                  className="text-sm font-medium text-gray-900 dark:text-gray-400 hover:underline"
+                >
+                  Forgot Password?
+                </Link>
+              </div>
               <FormError message={error || urlError} />
               <FormSuccess message={success} />
               <Button

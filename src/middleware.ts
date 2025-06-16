@@ -11,7 +11,10 @@ export default auth(async function middleware(req) {
 
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
-  const isAuthRoute = authRoutes.includes(nextUrl.pathname);
+ const isAuthRoute = authRoutes.some(route => 
+  nextUrl.pathname.startsWith(route) || 
+  nextUrl.pathname.startsWith('/reset-password/')
+);
 
   if (isApiAuthRoute) {
     return NextResponse.next();

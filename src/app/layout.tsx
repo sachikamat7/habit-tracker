@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { ModeToggle } from "@/components/mode-toggle";
 import "./globals.css";
 import  db  from "@/lib/db";
+import Link from "next/link";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

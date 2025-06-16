@@ -21,3 +21,17 @@ export const SignupSchema = z
     message: "Passwords must match",
     path: ["confirmPassword"],
   });
+
+export  const ResetPasswordEmailSchema = z.object({
+  email: z.string().email("Invalid email address"),
+})
+
+export const ResetPasswordSchema = z
+  .object({
+    password: z.string().min(3, { message: "Minimum three characters*" }).max(50),
+    confirmPassword: z.string().min(3, { message: "Minimum three characters*" }).max(50),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords must match",
+    path: ["confirmPassword"],
+  });

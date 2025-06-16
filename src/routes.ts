@@ -3,10 +3,10 @@ export const publicRoutes = ["/"];
 export const authRoutes = [
   "/signin",
   "/signup",
-  "/forgot-password",
   "/reset-password",
-  "/error",
-  "/verify-email",  
+  "/reset-password/:token*",
+  "/error", 
+  "/verify-email",
 ];
 
 // The prefix for the API authentication routes
