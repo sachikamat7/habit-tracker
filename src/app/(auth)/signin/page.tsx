@@ -22,7 +22,7 @@ import { signin } from "@/actions/signin";
 import { useTransition } from "react";
 import { SigninSchema } from "@/schemas";
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
@@ -107,15 +107,21 @@ export default function LoginForm() {
     },
   });
 
+  const { update } = useSession();
+
   function onSubmit(values: z.infer<typeof SigninSchema>) {
     setError("");
     setSuccess("");
     setUrlError("");
     startTransition(() => {
       //start the transition to indicate that a state update is pending, it knows when revalidatepath(), revalidateTag(), or other actions are called and completed
-      signin(values).then((data) => {
+      signin(values).then(async (data) => {
         setError(data?.error || "");
         setSuccess(data?.success || "");
+        if (!data?.error) {
+          await update();
+          router.push(DEFAULT_LOGIN_REDIRECT);
+        }
       });
     });
   }

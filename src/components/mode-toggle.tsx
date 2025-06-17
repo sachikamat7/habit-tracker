@@ -1,26 +1,36 @@
 "use client"
 
-import * as React from "react"
 import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
-import { Toggle } from "@/components/ui/toggle"
+import { Button } from "@/components/ui/button"
+import { useEffect, useState } from "react"
 
 export function ModeToggle() {
+  const [mounted, setMounted] = useState(false)
   const { theme, setTheme } = useTheme()
 
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return (
+      <Button variant="outline" size="sm" aria-label="Toggle theme">
+        <Sun className="h-4 w-4" />
+      </Button>
+    )
+  }
+
   return (
-    <Toggle
+    <Button
       variant="outline"
       size="sm"
-      pressed={theme === "dark"}
-      onPressedChange={(pressed) => setTheme(pressed ? "dark" : "light")}
+      onClick={() => setTheme(theme === "light" ? "dark" : "light")}
       aria-label="Toggle theme"
+      aria-pressed={theme === "dark"}
+      data-state={theme === "dark" ? "on" : "off"}
     >
-      {theme === "dark" ? (
-        <Moon className="h-[1.2rem] w-[1.2rem]" />
-      ) : (
-        <Sun className="h-[1.2rem] w-[1.2rem]" />
-      )}
-    </Toggle>
+      {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+    </Button>
   )
 }

@@ -24,7 +24,7 @@ export const signin = async (values: z.infer<typeof SigninSchema>) => {
     const existingUser = await getUserByEmail(email);
     if (!existingUser) {
         return { error: "Email not found" };
-    }
+    }   
     if (!existingUser.password) {
         return { error: "Email already in use with different provider!" };
     }
@@ -45,8 +45,9 @@ export const signin = async (values: z.infer<typeof SigninSchema>) => {
         await signIn("credentials", {
             email,
             password,
-            redirectTo: DEFAULT_LOGIN_REDIRECT
+            redirect: false,
         });
+        return { success: "" };
     } catch (error) {
         if (error instanceof AuthError) {
             switch (error.type) {

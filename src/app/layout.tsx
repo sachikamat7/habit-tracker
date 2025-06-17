@@ -1,20 +1,8 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider"
-import { ModeToggle } from "@/components/mode-toggle";
 import "./globals.css";
-import  db  from "@/lib/db";
-import Link from "next/link";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",  
-  subsets: ["latin"],
-});
+import Navbar from "@/components/navbar";
+import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
   title: "Habit Tracker",
@@ -28,20 +16,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   // const user = await db.user.findFirst();
-  return (
-    
+   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-      >
-        <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem = {false}
-            disableTransitionOnChange
-          >
-            <ModeToggle />
-            <main> {children} </main>
-          </ThemeProvider>
+      <body className="min-h-screen bg-background text-foreground">
+         <ThemeProvider
+          attribute="class"
+          defaultTheme="system" // Use fixed default instead of system
+          enableSystem // Disable system theme detection
+          disableTransitionOnChange
+        >
+          <SessionProvider>
+            <div className="relative">
+            <Navbar />
+            <main id="main-content">{children}</main>
+            </div>
+            </SessionProvider>  
+        </ThemeProvider>  
       </body>
     </html>
   );
