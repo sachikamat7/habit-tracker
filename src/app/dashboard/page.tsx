@@ -1,62 +1,64 @@
 "use client";
 
-import { auth } from "@/auth";
-import { SignOut } from "@/components/signout-button";
-import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input"
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { FormError } from "@/components/auth/form-error";
-import { FormSuccess } from "@/components/auth/form-success";
-import { Label } from "@/components/ui/label"
-import { SigninSchema } from "@/schemas";
-import { z } from "zod";
-import Link from "next/link";
 import { HabitForm } from "@/components/habit-form";
-// export default function Dashboard() {
-
-//   return (
-//     <>
-//       <div className="flex items-center justify-between mb-4">
-//         <h1 className="text-2xl font-bold">Dashboard</h1>
-//         </div>
-//     </>
-//   );
-// }
-
+import { useSession } from "next-auth/react";
+import HabitTracker from "../habit-tracking/habit-tracker";
+import { useEffect, useState } from "react";
+import { HabitWithLogs } from "@/types";
 
 export default function Dashboard() {
+  const { data: session } = useSession();
+  const [habits, setHabits] = useState<HabitWithLogs[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const form = useForm<z.infer<typeof SigninSchema>>({
-    resolver: zodResolver(SigninSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
+  useEffect(() => {
+    const fetchHabits = async () => {
+      if (session?.user?.id) {
+        try {
+          const response = await fetch(`/api/habits?userId=${session.user.id}`);
+          const data = await response.json();
+          setHabits(data);
+        } catch (error) {
+          console.error("Error fetching habits:", error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchHabits();
+  }, [session]);
 
   return (
-    <>
-    <HabitForm />
-    </>
+    <div className="w-full h-screen p-8">
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-2xl font-bold">Dashboard</h1>
+      </div>
+      
+      <div className="grid grid-cols-5 gap-6 h-[70vh]">
+        {/* Habit Tracker - 40% width (2/5 columns) */}
+        <div className="col-span-2  rounded-lg shadow p-6 overflow-y-auto">
+          {loading ? (
+            <div className="flex items-center justify-center h-full">
+              Loading habits...
+            </div>
+          ) : (
+            <HabitTracker habits={habits} userId={session?.user?.id || ""} />
+          )}
+        </div>
+        
+        {/* Edit Habit - 20% width (1/5 columns) */}
+        <div className="col-span-1  rounded-lg shadow p-6">
+          <h2 className="text-lg font-semibold mb-4">Edit Habit</h2>
+          <HabitForm />
+        </div>
+        
+        {/* Empty Space - 40% width (2/5 columns) */}
+        <div className="col-span-2 rounded-lg shadow p-6">
+          <h2 className="text-lg font-semibold mb-4">Analytics</h2>
+          <p className="text-gray-500">Your habit analytics will appear here</p>
+        </div>
+      </div>
+    </div>
   );
-};
-
+}
